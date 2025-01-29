@@ -1,32 +1,29 @@
-import argparse
 import random
-import sys
-
-from transformers import AutoModelForCausalLM, AutoTokenizer, DynamicCache
 import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, DynamicCache
 
-parser = argparse.ArgumentParser()
-parser.add_argument("question", type=str)
-parser.add_argument("-m", "--model-name", default="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
-parser.add_argument("-d", "--device", default="auto")
-parser.add_argument("-r", "--replacements", nargs="+", default=["\nWait, but", "\nHmm", "\nSo"])
-parser.add_argument("-t", "--min-thinking-tokens", type=int, default=128)
-parser.add_argument("-p", "--prefill", default="")
-args = parser.parse_args()
+# Configuration
+MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+DEVICE = "auto"
+REPLACEMENTS = ["\nWait, but", "\nHmm", "\nSo"]
+MIN_THINKING_TOKENS = 32
+PREFILL = ""
 
-tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+# Load model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(
-    args.model_name, torch_dtype=torch.bfloat16, device_map=args.device)
+    MODEL_NAME, torch_dtype=torch.bfloat16, device_map=DEVICE
+)
 
+# Special tokens
 _, _start_think_token, end_think_token = tokenizer.encode("<think></think>")
-
 
 @torch.inference_mode
 def reasoning_effort(question: str, min_thinking_tokens: int):
     tokens = tokenizer.apply_chat_template(
         [
             {"role": "user", "content": question},
-            {"role": "assistant", "content": "<think>\n" + args.prefill},
+            {"role": "assistant", "content": "<think>\n" + PREFILL},
         ],
         continue_final_message=True,
         return_tensors="pt",
@@ -47,7 +44,7 @@ def reasoning_effort(question: str, min_thinking_tokens: int):
             next_token in (end_think_token, model.config.eos_token_id)
             and n_thinking_tokens < min_thinking_tokens
         ):
-            replacement = random.choice(args.replacements)
+            replacement = random.choice(REPLACEMENTS)
             yield replacement
             replacement_tokens = tokenizer.encode(replacement)
             n_thinking_tokens += len(replacement_tokens)
@@ -59,6 +56,16 @@ def reasoning_effort(question: str, min_thinking_tokens: int):
             n_thinking_tokens += 1
             tokens = torch.tensor([[next_token]]).to(tokens.device)
 
-for chunk in reasoning_effort(args.question, args.min_thinking_tokens):
-    print(chunk, end="", flush=True)
+def main():
+    while True:
+        question = input("Enter your question (or type 'exit' to quit): ")
+        if question.lower() == 'exit':
+            print("Exiting...")
+            break
 
+        for chunk in reasoning_effort(question, MIN_THINKING_TOKENS):
+            print(chunk, end="", flush=True)
+        print("\n")
+
+if __name__ == "__main__":
+    main()
