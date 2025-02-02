@@ -6,7 +6,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, DynamicCache
 MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 DEVICE = "auto"
 REPLACEMENTS = ["\nWait, but", "\nHmm", "\nSo"]
-MIN_THINKING_TOKENS = 32
+MIN_THINKING_TOKENS = 16
 PREFILL = ""
 
 # Load model and tokenizer

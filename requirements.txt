@@ -1,3 +1,6 @@
 transformers
 torch
 accelerate
+pysbd
+protobuf
+sentencepiece

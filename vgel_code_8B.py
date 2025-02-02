@@ -3,7 +3,7 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, DynamicCache
 
 # Configuration
-MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+MODEL_NAME = "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
 DEVICE = "auto"
 REPLACEMENTS = ["\nWait, but", "\nHmm", "\nSo"]
 MIN_THINKING_TOKENS = 16
