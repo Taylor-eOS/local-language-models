@@ -11,19 +11,19 @@ def generate_text(prompt):
     streamer = TextStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
     outputs = model.generate(
         inputs["input_ids"],
-        max_new_tokens=2048,  # Sets reasonable generation budget
+        max_new_tokens=2048,
         do_sample=True,
         temperature=0.6,
         top_p=0.9,
         streamer=streamer,
-        eos_token_id=tokenizer.eos_token_id,  # Explicit EOS handling
-        pad_token_id=tokenizer.eos_token_id,  # Needed for some models
+        eos_token_id=tokenizer.eos_token_id,
+        pad_token_id=tokenizer.eos_token_id,
     )
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 def main():
     while True:
-        question = input("Enter your question (type 'exit' to quit): ")
+        question = input("Enter your question: ")
         if question.lower() == 'exit':
             print("Exiting...")
             break
