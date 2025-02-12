@@ -1,7 +1,9 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
 
-tokenizer = AutoTokenizer.from_pretrained('stabilityai/stablelm-zephyr-3b')
-model = AutoModelForCausalLM.from_pretrained('stabilityai/stablelm-zephyr-3b', device_map="auto")
+#model_name = 'stabilityai/stablelm-zephyr-3b'
+model_name = 'stabilityai/stablelm-2-zephyr-1_6b'
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
 
 def stream_response(prompt):
     prompt = [{'role': 'user', 'content': prompt}]
@@ -11,5 +13,4 @@ def stream_response(prompt):
 
 while True:
     prompt = input("User: ")
-    print("\n")
     stream_response(prompt)
