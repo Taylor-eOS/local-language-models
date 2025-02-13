@@ -14,5 +14,5 @@ while True:
     input_text = tokenizer.apply_chat_template(messages, tokenize=False)
     inputs = tokenizer.encode(input_text, return_tensors="pt").to(device)
     streamer = TextStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
-    print(end=" ")
+    print(end="")
     model.generate(inputs, max_new_tokens=500, temperature=0.2, top_p=0.9, do_sample=True, streamer=streamer)

@@ -1,7 +1,8 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
 
-MODEL_NAME = "cognitivecomputations/dolphin-2.1-mistral-7b"
+#MODEL_NAME = "cognitivecomputations/dolphin-2.1-mistral-7b"
+MODEL_NAME = "cognitivecomputations/Dolphin3.0-Qwen2.5-3b"
 DEVICE = "auto"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.bfloat16, device_map=DEVICE)
