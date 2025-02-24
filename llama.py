@@ -27,3 +27,4 @@ def stream_output(prompt):
 while True:
     user_prompt = input("Enter your prompt: ")
     stream_output(user_prompt)
+

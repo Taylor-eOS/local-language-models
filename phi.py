@@ -11,3 +11,4 @@ while True:
     outputs = model.generate(**inputs, max_length=100)
     text = tokenizer.batch_decode(outputs)[0]
     print(text)
+

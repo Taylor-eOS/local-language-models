@@ -12,8 +12,7 @@ PREFILL = ""
 # Load model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 model = AutoModelForCausalLM.from_pretrained(
-    MODEL_NAME, torch_dtype=torch.bfloat16, device_map=DEVICE
-)
+    MODEL_NAME, torch_dtype=torch.bfloat16, device_map=DEVICE)
 
 # Special tokens
 _, _start_think_token, end_think_token = tokenizer.encode("<think></think>")
@@ -26,8 +25,7 @@ def reasoning_effort(question: str, min_thinking_tokens: int):
             {"role": "assistant", "content": "<think>\n" + PREFILL},
         ],
         continue_final_message=True,
-        return_tensors="pt",
-    )
+        return_tensors="pt",)
     tokens = tokens.to(model.device)
     kv = DynamicCache()
     n_thinking_tokens = 0

@@ -12,7 +12,7 @@ def generate_text(prompt):
     streamer = TextStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
     outputs = model.generate(
         inputs["input_ids"],
-        max_new_tokens=2048,
+        max_new_tokens=1024,
         do_sample=True,
         temperature=0.6,
         top_p=0.9,
@@ -24,6 +24,7 @@ def generate_text(prompt):
 
 def main():
     while True:
+        print(MODEL_NAME)
         question = input("Enter your question: ")
         if question.lower() == 'exit':
             print("Exiting...")
