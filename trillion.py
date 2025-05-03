@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
+from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer, StoppingCriteria, StoppingCriteriaList
 
 model = AutoModelForCausalLM.from_pretrained(
     "trillionlabs/Trillion-7B-preview",
@@ -8,7 +8,22 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 tokenizer = AutoTokenizer.from_pretrained("trillionlabs/Trillion-7B-preview")
 
-# Add stopping criteria or parameters to help the model know when to stop
+# Custom Stopping Criteria Class
+class StopOnTokens(StoppingCriteria):
+    def __init__(self, stop_sequences):
+        self.stop_sequences = stop_sequences
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+        # Check if any stop sequence is generated
+        for seq in self.stop_sequences:
+            if input_ids[0, -len(seq):].tolist() == seq:
+                return True  # Stop generation
+        return False
+
+# Define stop strings and convert to token sequences
+stop_strings = ["\nYou:", "\nUser:", tokenizer.eos_token]
+stop_sequences = [tokenizer.encode(s, add_special_tokens=False) for s in stop_strings]
+
 generation_kwargs = {
     "max_new_tokens": 512,
     "eos_token_id": tokenizer.eos_token_id,
@@ -16,7 +31,7 @@ generation_kwargs = {
     "do_sample": True,
     "temperature": 0.7,
     "top_p": 0.9,
-    "stopping_criteria": None,  # You can add custom stopping criteria if needed
+    "stopping_criteria": StoppingCriteriaList([StopOnTokens(stop_sequences)]),  # Key Fix
 }
 
 while True:
@@ -35,18 +50,15 @@ while True:
         if "token_type_ids" in inputs:
             del inputs["token_type_ids"]
         
-        # Create a streamer that will stop at appropriate points
+        # Streamer setup (optional stop_str for redundancy)
         streamer = TextStreamer(
             tokenizer,
             skip_prompt=True,
-            # You can add a stopping pattern if the model has specific ending tokens
-            stop_str=[tokenizer.eos_token, "\nYou:", "\nUser:"]
+            stop_str=stop_strings  # Not primary mechanism
         )
         
-        # Clear the GPU cache to prevent memory issues
         torch.cuda.empty_cache()
         
-        # Generate the response
         _ = model.generate(
             **inputs,
             streamer=streamer,
