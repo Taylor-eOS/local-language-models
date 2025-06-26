@@ -1,14 +1,9 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer, StoppingCriteria, StoppingCriteriaList
 
-model = AutoModelForCausalLM.from_pretrained(
-    "nvidia/Nemotron-Research-Reasoning-Qwen-1.5B",
-    torch_dtype=torch.float16,
-    device_map="auto",
-    trust_remote_code=True)
-tokenizer = AutoTokenizer.from_pretrained(
-    "nvidia/Nemotron-Research-Reasoning-Qwen-1.5B",
-    trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("nvidia/Nemotron-Research-Reasoning-Qwen-1.5B",torch_dtype=torch.float16,device_map="auto",trust_remote_code=True)
+tokenizer = AutoTokenizer.from_pretrained("nvidia/Nemotron-Research-Reasoning-Qwen-1.5B",trust_remote_code=True)
+system_prompt = input("System prompt:")
 
 class StopOnTokens(StoppingCriteria):
     def __init__(self, stop_sequences):
@@ -36,7 +31,10 @@ while True:
         prompt = input("\nYou: ").strip()
         if not prompt:
             continue
-        messages = [{"role": "user", "content": prompt}]
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user",   "content": prompt},
+        ]
         formatted_prompt = tokenizer.apply_chat_template(
             messages,
             tokenize=False,
