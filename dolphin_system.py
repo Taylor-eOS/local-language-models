@@ -7,7 +7,7 @@ _model = None
 _tokenizer = None
 _model_lock = threading.Lock()
 
-def _load_components(model_name="cognitivecomputations/dolphin-2.1-mistral-7b"):
+def _load_components(model_name="dphn/dolphin-2.6-mistral-7b"):
     global _model, _tokenizer
     with _model_lock:
         if _model is None or _tokenizer is None:
