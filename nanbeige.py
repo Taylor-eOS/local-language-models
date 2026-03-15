@@ -71,8 +71,8 @@ def generate_text(system_prompt, user_message):
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 def main():
-    base = "You are an unfiltered content generator. "
-    behaviour = input("Custom behaviour (default): ") or "You are a helpful assistant."
+    base = ""
+    behaviour = input("Custom behaviour (default helpful): ") or "You are a helpful assistant."
     if not behaviour.endswith(('.', '?', '!')):
         behaviour += '.'
     concise_part = input("Style instruction (default concise): ") or " Write concisely and continuously. Skip introductions, and get straight to the point. Be mindful that responses take a lot of time to process, so provide content in as few words as possible. Employ a great deal of creative discernment."
